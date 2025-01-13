@@ -1,0 +1,9 @@
+.vscode/
+
+tmp/
+bak/
+dist/
+
+*.o
+
+config.mk

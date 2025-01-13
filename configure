@@ -1,0 +1,54 @@
+#!/bin/sh
+
+echo "Configuring the project..."
+
+CC="gcc"
+CFLAGS="-Wall -Wextra"
+BUILD_TYPE="release"
+OUT_DIR="bin"
+INCLUDE_DIR="."
+
+for arg in "$@"; do
+    case $arg in
+        --cc=*)
+            CC="${arg#*=}"
+            ;;
+        --cflags=*)
+            CFLAGS="${arg#*=}"
+            ;;
+        --build-type=*)
+            BUILD_TYPE="${arg#*=}"
+            ;;
+        --out-dir=*)
+            OUT_DIR="${arg#*=}"
+            ;;
+        --include-dir=*)
+            INCLUDE_DIR="${arg#*=}"
+            ;;
+        *)
+            echo "Unknown option: $arg"
+            exit 1
+            ;;
+    esac
+done
+
+# Adjust CFLAGS based on the build type
+if [ "$BUILD_TYPE" == "debug" ]; then
+    CFLAGS="$CFLAGS -g -DDEBUG"
+elif [ "$BUILD_TYPE" == "release" ]; then
+    CFLAGS="$CFLAGS -O2 -DNDEBUG"
+else
+    echo "Unknown build type: $BUILD_TYPE"
+    exit 1
+fi
+
+# Generate the config.mk file
+cat <<EOF > config.mk
+# Auto-generated configuration file
+CC = $CC
+CFLAGS = $CFLAGS
+OUT_DIR = $OUT_DIR
+INCLUDE_DIR = $INCLUDE_DIR
+EOF
+
+echo "Configuration completed. Settings written to config.mk."
